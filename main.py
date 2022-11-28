@@ -77,3 +77,4 @@ if __name__ == '__main__':
         print('Felicitari!!! Ai castigat razboiul!!!')
 print("   Let's start Battleship")
 printare_tabla(tabla)
+ #Final 
