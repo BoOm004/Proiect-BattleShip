@@ -115,21 +115,24 @@ def numara_navele_nimerite(tabla):
     return numaratoare
 
 amplasare_nava(TABLA_ASCUNSA)
-printare_tabla(TABLA_ASCUNSA)
-print('Numar nave scufundate: ', numara_navele_nimerite(TABLA_ASCUNSA))
-print('Sa incepem jocul. Ghiceste pozitia navelor')
+printare_tabla(TABLA_AFISATA)
+print('Numar nave scufundate: ', numara_navele_nimerite(TABLA_AFISATA))
+print('Sa incepem jocul.')
 nr_miscari = 100
 while nr_miscari > 0:
+    print("Ghiceste pozitia navelor.")
     rand, coloana = introducere_coordonate_nave()
     if TABLA_AFISATA[rand][coloana] == '-':
         print('Ai incercat deja aici, vezi alta pozitie.')
     elif TABLA_ASCUNSA[rand][coloana] =='x':
         print('Ai nimerit nava')
-        TABLA_ASCUNSA[rand][coloana] = 'x'
+        TABLA_AFISATA[rand][coloana] = 'x'
+        nr_miscari -= 1
     else:
         print('Nu ai nimerit nici o nava. Mai incearca.')
         TABLA_ASCUNSA[rand][coloana] ='-'
-    if numara_navele_nimerite(TABLA_ASCUNSA) == 20:
+        nr_miscari -= 1
+    if numara_navele_nimerite(TABLA_ASCUNSA) == 10:
         print('Felicitari ai castigat!!!')
         break
     print("Au mai ramas " + str(nr_miscari) + 'miscari')
