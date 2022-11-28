@@ -1,8 +1,9 @@
+import random
 from random import randint
 
-tabla = []
-for x in range(10):
-    tabla.append(['#'] * 10) 
+TABLA_ASCUNSA = [['▢'] * 10 for i in range(10)]
+TABLA_AFISATA = [['▢'] * 10 for i in range(10)]
+LUNGIMEA_NAVELOR = [1,1,1,1,2,2,2,3,3,4]
 
 def printare_tabla(tabla):    
     coloana = ('A B C D E F G H I J')
@@ -14,67 +15,123 @@ def printare_tabla(tabla):
         print(nr_rand,' ', (' ').join(rand))
         nr_rand += 1
 
-def creare_nave (tabla):
-    for nava in range(10):
-        nava_rand, nava_coloana = randint(0,10), randint(0,10)
-        while tabla[nava_rand][nava_coloana] == 'X': # 'X' pentru navele pe care le-am nimerit
-            nava_rand, nava_coloana = randint(0,10), randint(0,10)
-        tabla[nava_rand][nava_coloana] = 'X'   
+transformare_litere = {'A':0, 'B':1, 'C':2, 'D':3, 'E':4, 'F':5, 'G':6, 'H':7, 'I':8, 'J':9}
 
+#verifica incadrare nava pe tabla
+def verifica_incadrare_nava(LUNGIME_NAVA, rand, coloana, orientare):
+    #verifica orientarea pe orizontala
+    if orientare == 'O':
+        if coloana + LUNGIME_NAVA > 10:
+            return False
+        else:
+            return True
+    #verifica orientarea pe verticala
+    else:
+        if rand + LUNGIME_NAVA > 10:
+            return False
+        else:
+            return True
 
-def pozitie_nava(tabla, nava, pozitie, orientare, x, y):
-    rand = input('Introdu numarul randului: ').upper()
-    while rand not in '0123456789':
-        print('Introdu un numar valid ex: 0,1,2,3,4,5,6,7,8,9')
-        rand = input('Introdu numarul randului: ').upper()
+def verifica_suprapunere_nave(tabla, rand, coloana, orientare, lungime_nava):
+    # verificare in cazul pozitionarii pe orizontala
+    if orientare == 'O':
+        for i in range(coloana, coloana + lungime_nava):
+            if tabla[rand][i] == 'x':
+                return True
+    # verificare in cazul pozitionarii pe verticala            
+    else:
+        for i in range (rand, rand + lungime_nava):
+            if tabla[i][coloana] == 'x':
+                return True     
+    return False
+
+def amplasare_nava(tabla):
+    for lungime_nava in LUNGIMEA_NAVELOR:
+        while True:
+            orientare = random.choice(['O', 'V'])
+            rand = randint (0, 9)
+            coloana = randint (0, 9)
+            if verifica_incadrare_nava(lungime_nava, rand, coloana, orientare):
+                if verifica_suprapunere_nave(tabla, rand, coloana, orientare, lungime_nava) == False:
+                    if orientare == 'O':
+                        for i in range (coloana, coloana + lungime_nava):
+                            tabla[rand][i] = 'x'
+                    else:
+                        for i in range (rand, rand + lungime_nava):
+                            tabla[i][coloana] = 'x'
+                    break        
     
-    coloana = input('Introdu litera coloanei: ').upper()
-    while coloana not in 'ABCDEFGHIJ':
-        print('Introdu o litera valida ex: A,B,C,D,E,F,G,H,I,J')
-        coloana = input('Introdu litera coloanei: ').upper()
+def introducere_coordonate_nave ():
+    if introducere_coordonate_nave == True:
+        while True:
+            try:
+                rand = input('Introdu numarul randului: ')
+                if rand in '0123456789':
+                    rand = int(rand) - 1
+                    break
+            except ValueError:
+                print('Introdu un numar valid ex: 0,1,2,3,4,5,6,7,8,9')
+        while True:
+            try:
+                coloana = input('Introdu litera coloanei: ').upper()
+                if coloana in 'ABCDEFGHIJ':
+                    coloana = transformare_litere[coloana]
+                    break
+            except KeyError:
+                print('Introdu o litera valida ex: A,B,C,D,E,F,G,H,I,J')
+        while True:
+            try:
+                orientare = input('Introdu orientarea O/V : ').upper()
+                if orientare == 'O' or orientare == 'V':
+                    break
+            except TypeError:
+                print('Introdu V/O pentru tipul orientarii: ')
+        return rand, coloana, orientare
+    else:
+        while True:
+            try:
+                rand = input('Introdu numarul randului: ')
+                if rand in '0123456789':
+                    rand = int(rand) - 1
+                    break
+            except ValueError:
+                print('Introdu un numar valid ex: 0,1,2,3,4,5,6,7,8,9')
+        while True:
+            try:
+                coloana = input('Introdu litera coloanei: ').upper()
+                if coloana in 'ABCDEFGHIJ':
+                    coloana = transformare_litere[coloana]
+                    break
+            except KeyError:
+                print('Introdu o litera valida ex: A,B,C,D,E,F,G,H,I,J')  
+        return rand, coloana
 
-    orientare = input('Introdu v/o pentru tipul orientarii; ').upper()
-    while orientare not in 'VO':
-        print('Introdu o orientare valida ex: V - verticala, O - orizontala')
-        orientare = input('Introdu v/o pentru tipul orientarii; ').upper()
-
-    V = 'veritcal'
-    O = 'orizontal'
-     # x este pentru orientarea pe verticala
-    if orientare == V:
-        for i in range(nava):
-            tabla[x][y+1] = pozitie
-    # y este pentru orientare pe orizonala
-    elif orientare == O:
-        for i in range(nava):
-            tabla[y][x+1] = pozitie
-    return int(rand) - 1, coloana
-
-def numara_navele_nimerite (tabla):
+def numara_navele_nimerite(tabla):
     numaratoare = 0
     for rand in tabla:
         for coloana in rand:
-            if coloana == 'X':
+            if coloana == 'x':
                 numaratoare += 1
     return numaratoare
 
-if __name__ == '__main__':
-    creare_nave(tabla)
-    print('Ghiceste ppozitia navelor')
-    print(tabla)
-    rand, coloana  =pozitie_nava()
-    # '-' cand nu ai nimerit nava/ si casuta a fost deja aleasa
-    if tabla [rand] [coloana] == '-': 
+amplasare_nava(TABLA_ASCUNSA)
+printare_tabla(TABLA_ASCUNSA)
+print('Numar nave scufundate: ', numara_navele_nimerite(TABLA_ASCUNSA))
+print('Sa incepem jocul. Ghiceste pozitia navelor')
+nr_miscari = 100
+while nr_miscari > 0:
+    rand, coloana = introducere_coordonate_nave()
+    if TABLA_AFISATA[rand][coloana] == '-':
         print('Ai incercat deja aici, vezi alta pozitie.')
-    elif tabla [rand] [coloana] == 'X':
+    elif TABLA_ASCUNSA[rand][coloana] =='x':
         print('Ai nimerit nava')
-        tabla [rand] [colona] = 'X'
-        
+        TABLA_ASCUNSA[rand][coloana] = 'x'
     else:
-        print('Nu ai nimeri nava, mai incearca.')
-        tabla [rand] [coloana] = '-'
-    if numara_navele_nimerite(tabla) == 10:
-        print('Felicitari!!! Ai castigat razboiul!!!')
-print("   Let's start Battleship")
-printare_tabla(tabla)
- #Final 
+        print('Nu ai nimerit nici o nava. Mai incearca.')
+        TABLA_ASCUNSA[rand][coloana] ='-'
+    if numara_navele_nimerite(TABLA_ASCUNSA) == 20:
+        print('Felicitari ai castigat!!!')
+        break
+    print("Au mai ramas " + str(nr_miscari) + 'miscari')
+    if nr_miscari == 0:
+        print("Nu mai ai nici o miscare")
